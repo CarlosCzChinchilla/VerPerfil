@@ -129,7 +129,7 @@ def buscar_usuario():
     except Exception as e:
         # Imprimir cualquier excepción inesperada
         print(f"Error inesperado: {str(e)}")
-        return jsonify({'error': 'Error interno del servidor'}), 500
+        return jsonify({'error': 'Error interno del servidor'}), 500   # BUSCAR USUARIOS POR MEDIO DE ID--------------------------------------------------------------------------------------------------------------------
 
 # Ruta para actualizar la contraseña del usuario
 @login_blueprint.route('/restablecer', methods=['PUT'])
