@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla Inicial</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #03094c, #ACB6E5);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 800px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .top-buttons button {
+            background: linear-gradient(45deg, #060952, #2575fc);
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.4s ease;
+        }
+
+        .top-buttons button:hover {
+            background: linear-gradient(45deg, #2575fc, #060952);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .top-buttons input {
+            width: 50%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .top-buttons input:focus {
+            border-color: #6a11cb;
+            outline: none;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 20px;
+        }
+
+        .filter-item {
+    width: 90%;
+    background-color: #fff;
+    padding: 20px; 
+    border-radius: 15px; 
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); 
+    flex: 1;
+    text-align: center;
+}
+
+.filter-item h1 {
+    font-size: 24px; 
+    margin-bottom: 15px; 
+    color: #333;
+}
+
+fieldset {
+    border: none;
+    margin-bottom: 10px; 
+    padding: 0;
+}
+
+fieldset label {
+    font-size: 14px; 
+    color: #333;
+    display: block;
+    margin-bottom: 5px; 
+    text-align: left;
+}
+
+fieldset select,
+fieldset input[type="checkbox"] {
+    margin-bottom: 5px; 
+}
+
+.filter-item button {
+    font-size: 14px; 
+    padding: 8px 16px; 
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    background: linear-gradient(45deg, #0662d2, #000000);
+    color: white;
+    transition: all 0.4s ease;
+    width: 100%;
+}
+
+
+        .filter-item button:hover {
+            background: linear-gradient(45deg, #000000, #0662d2);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .full-width-container {
+            width: 95%;
+            max-width: 1200px;
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 800px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .filter-container {
+                flex-direction: column;
+            }
+
+            .filter-item {
+                width: 90%;
+                margin-bottom: 20px;
+            }
+
+            .top-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .top-buttons input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .top-buttons button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .full-width-container {
+                width: 90%;
+            }
+        }
+    </style>
+</style>
+</head>
+<body>
+    <div class="top-buttons">
+        <form action="{% url 'buscar_usuario' %}" method="get">
+            <input type="text" name="id" placeholder="Ingrese texto a buscar">
+            <button type="submit">Buscar</button>
+        </form>
+        <button>Ver mi perfil</button>
+        <button>Crear Publicación</button>
+    </div>
+
+    <div class="container">
+        <div class="filter-container">
+            <div class="filter-item">
+                <h1>C A T E D R Á T I C O :</h1>
+                <fieldset>
+                    <label for="catedratico">Filtrar por catedrático:</label>
+                    <select id="catedratico">
+                        <!-- Aquí se iteran los nombres de los catedráticos -->
+                    </select>
+
+                    <input type="checkbox" id="nombreCatedratico">
+                    
+                    <button id="btnFiltrarCatedratico">Filtrar por Catedrático</button>
+                </fieldset>
+            </div>
+
+            <div class="filter-item">
+                <h1>C U R S O :</h1>
+                <fieldset>
+                    <label for="curso">Filtrar por curso:</label>
+                    <select id="curso">
+                        <!-- Aquí se iteran los cursos -->
+                    </select>
+
+                    <input type="checkbox" id="nombreCurso">
+                    
+                    <button id="btnFiltrarCurso">Filtrar por Curso</button>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+    <div class="full-width-container">
+        <!-- Contenido del nuevo contenedor -->
+        <h2>P U B L I C A C I O N E S</h2>
+        <p> G R U P O - #6</p>
+    </div>
+</body>
+</html>

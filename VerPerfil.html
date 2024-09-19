@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Perfil</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            width: 450px;
+            text-align: center;
+        }
+
+        .profile-container h1 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .profile-container label {
+            font-size: 16px;
+            color: #333;
+            display: block;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .profile-container input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .profile-container input[type="text"]:focus {
+            border-color: #c3cfe2;
+            outline: none;
+        }
+
+        .profile-container h2 {
+            font-size: 22px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .profile-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .profile-container th, .profile-container td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .profile-container th {
+            background-color: #c3cfe2;
+            color: white;
+        }
+
+        .profile-container td {
+            background-color: #f9f9f9;
+        }
+
+        @media (max-width: 450px) {
+            .profile-container {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BUSCAR USUARIOS POR ID------------------------------------------------------------------------------------------------- -->
+    <div class="profile-container">
+        <h1>Ver Perfil</h1>
+
+        <label for="registroAcademico">Registro Académico:</label>
+        <input type="text" id="registroAcademico" name="registroAcademico" value="{{ usuario.id }}" readonly>
+
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ usuario.nombres }}" readonly>
+
+        <h2>Cursos Aprobados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Curso</th>
+                    <th>Créditos</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
