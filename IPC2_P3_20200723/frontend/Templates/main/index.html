@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Página Principal</title>
+    <style>
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+        .buttons {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+        }
+        .buttons button {
+            margin-right: 10px;
+        }
+        .text-areas {
+            display: flex;
+            justify-content: space-between;
+        }
+        .text-areas textarea {
+            width: 48%;
+            height: 300px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="buttons">
+            <button onclick="document.getElementById('fileInput').click()">Cargar Archivos</button>
+            <input type="file" id="fileInput" onchange="handleFileUpload(event)">
+            <button onclick="location.href='{% url 'index' %}#peticiones'">Peticiones</button>
+            <button onclick="location.href='{% url 'ayuda' %}'">Ayuda</button>
+            <button onclick="enviar()">Enviar</button>
+            <button onclick="resetear()">Resetear</button>
+        </div>
+        <div id="peticiones" style="display: none;">
+            <button onclick="consultarDatos()">Consultar Datos</button>
+            <button onclick="mostrarResumenPorFecha()">Resumen de Clasificación por Fecha</button>
+            <button onclick="mostrarResumenPorRango()">Resumen por Rango de Fechas</button>
+            <button onclick="generarReportePDF()">Reporte en PDF</button>
+            <button onclick="pruebaMensaje()">Prueba de Mensaje</button>
+        </div>
+        <div class="text-areas">
+            <textarea id="entradaXML" placeholder="Archivo XML de entrada"></textarea>
+            <textarea id="salidaXML" placeholder="Archivo XML de salida"></textarea>
+        </div>
+    </div>
+    <script>
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('entradaXML').value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function enviar() {
+            const entradaXML = document.getElementById('entradaXML').value;
+            const formData = new FormData();
+            const blob = new Blob([entradaXML], { type: 'text/xml' });
+            formData.append('archivo', blob, 'entrada.xml');
+
+            fetch('http://127.0.0.1:5000/procesar-mensajes', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('salidaXML').value = data.respuesta_xml;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function resetear() {
+            fetch('http://127.0.0.1:5000/resetear', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('salidaXML').value = "Base de datos reseteada.";
+                });
+        }
+
+        function consultarDatos() {
+            fetch('/consultar_datos/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('salidaXML').value = JSON.stringify(data, null, 2);
+                });
+        }
+
+        function mostrarResumenPorFecha() {
+            let fecha = prompt("Ingrese la fecha (dd/mm/yyyy):");
+            fetch(`/resumen_por_fecha/?fecha=${fecha}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('salidaXML').value = JSON.stringify(data, null, 2);
+                });
+        }
+
+        function mostrarResumenPorRango() {
+            let fechaInicio = prompt("Ingrese la fecha de inicio (dd/mm/yyyy):");
+            let fechaFin = prompt("Ingrese la fecha de fin (dd/mm/yyyy):");
+            fetch(`/resumen_por_rango/?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('salidaXML').value = JSON.stringify(data, null, 2);
+                });
+        }
+
+        function generarReportePDF() {
+            // Implementar la lógica para generar el reporte en PDF
+        }
+
+        function pruebaMensaje() {
+            let mensaje = prompt("Ingrese el mensaje de prueba:");
+            fetch('/prueba_mensaje/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ mensaje: mensaje })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('salidaXML').value = JSON.stringify(data, null, 2);
+                });
+        }
+
+        function cargarXMLSalida() {
+            fetch('http://127.0.0.1:5000/obtener-xml-salida')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('salidaXML').value = data.respuesta_xml;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // Llamar a la función para cargar el XML de salida al cargar la página
+        window.onload = cargarXMLSalida;
+    </script>
+</body>
+</html>

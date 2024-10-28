@@ -1,0 +1,86 @@
+from flask import Flask, request, jsonify
+from models import XMLProcessor, XMLSerializer, Nodo
+import os
+
+app = Flask(__name__)
+
+@app.route('/procesar-mensajes', methods=['POST'])
+def procesar_mensajes():
+    try:
+        archivo = request.files.get('archivo')
+        if archivo:
+            # Crear la carpeta 'data' si no existe
+            if not os.path.exists('data'):
+                os.makedirs('data')
+            
+            # Guarda el archivo en la carpeta 'data'
+            ruta_archivo = os.path.join('data', archivo.filename)
+            archivo.save(ruta_archivo)
+            
+            # Procesa el archivo usando XMLProcessor
+            procesador = XMLProcessor()
+            procesador.cargar_archivo(ruta_archivo)
+            
+            # Lee los mensajes
+            mensajes = procesador.leer_mensajes()
+            
+            # Genera el archivo de respuesta XML
+            respuesta_xml = procesador.generar_respuesta_xml(mensajes)
+            
+            # Serializa los datos en un archivo XML
+            nodo_respuesta = Nodo("respuesta", texto=respuesta_xml)
+            serializer = XMLSerializer('data/response.xml')
+            serializer.guardar(nodo_respuesta)
+            
+            # Devuelve el diccionario y los mensajes procesados
+            return jsonify({
+                "respuesta_xml": respuesta_xml,
+                "mensajes": mensajes
+            }), 200
+        else:
+            return jsonify({"error": "Archivo no proporcionado."}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/consultar-datos', methods=['GET'])
+def consultar_datos():
+    serializer = XMLSerializer('data/response.xml')
+    nodo_respuesta = serializer.cargar()
+    return jsonify({"respuesta_xml": nodo_respuesta.texto}), 200
+
+@app.route('/resumen-por-fecha', methods=['POST'])
+def resumen_por_fecha():
+    fecha = request.json.get('fecha')
+    if fecha:
+        procesador = XMLProcessor()
+        mensajes = procesador.leer_mensajes()
+        mensajes_fecha = [mensaje for mensaje in mensajes if fecha in mensaje]
+        respuesta_xml = procesador.generar_respuesta_xml(mensajes_fecha)
+        return jsonify({"respuesta_xml": respuesta_xml, "mensajes": mensajes_fecha}), 200
+    else:
+        return jsonify({"error": "Fecha no proporcionada."}), 400
+
+@app.route('/resumen-por-rango', methods=['POST'])
+def resumen_por_rango():
+    fecha_inicio = request.json.get('fecha_inicio')
+    fecha_fin = request.json.get('fecha_fin')
+    if fecha_inicio and fecha_fin:
+        procesador = XMLProcessor()
+        mensajes = procesador.leer_mensajes()
+        mensajes_rango = [mensaje for mensaje in mensajes if fecha_inicio <= mensaje.split()[2] <= fecha_fin]
+        respuesta_xml = procesador.generar_respuesta_xml(mensajes_rango)
+        return jsonify({"respuesta_xml": respuesta_xml, "mensajes": mensajes_rango}), 200
+    else:
+        return jsonify({"error": "Fechas no proporcionadas."}), 400
+
+@app.route('/obtener-xml-salida', methods=['GET'])
+def obtener_xml_salida():
+    try:
+        with open('data/response.xml', 'r', encoding='utf-8') as file:
+            response_xml = file.read()
+        return jsonify({"respuesta_xml": response_xml}), 200
+    except FileNotFoundError:
+        return jsonify({"error": "Archivo no encontrado."}), 404
+
+if __name__ == '__main__':
+    app.run(debug=True)
